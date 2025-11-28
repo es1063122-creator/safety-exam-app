@@ -17,4 +17,20 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
-        keys.
+        keys.map(key => {
+          if (key !== "safety-exam-cache-v2") {
+            return caches.delete(key);
+          }
+        })
+      );
+    })
+  );
+});
+
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(resp => {
+      return resp || fetch(event.request);
+    })
+  );
+});
